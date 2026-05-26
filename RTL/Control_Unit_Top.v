@@ -11,7 +11,7 @@ module Control_Unit_Top(
 
     wire [1:0] ALUOp;
 
-    // Fixed instance name to 'u_Main_Decoder' to prevent collision
+    
     Main_Decoder u_Main_Decoder(
         .Op(Op),
         .RegWrite(RegWrite),
@@ -24,7 +24,7 @@ module Control_Unit_Top(
         .Jump(Jump) 
     );
 
-    // Fixed instance name to 'u_ALU_Decoder' to prevent collision
+   
     ALU_Decoder u_ALU_Decoder(
         .ALUOp(ALUOp),
         .funct3(funct3),
