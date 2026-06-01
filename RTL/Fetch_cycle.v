@@ -1,10 +1,10 @@
 module fetch_cycle(
     input clk, rst,
-    input PCSrcE,
+    input PCSrcE,    //detect Jump or Branch 
     input StallF,          // load-use: freeze PC
     input StallD,          // load-use: freeze IF/ID register
     input FlushD,          // control hazard: clear IF/ID register to NOP
-    input [31:0] PCTargetE,
+    input [31:0] PCTargetE,  //PC + offset 
     output [31:0] InstrD,
     output [31:0] PCD, PCPlus4D
 );
@@ -29,7 +29,7 @@ module fetch_cycle(
     PC_Module Program_Counter (
         .clk(clk),
         .rst(rst),
-        .StallF(StallF),
+        .StallF(StallF),   //stallF = 1 , PCNext = PC 
         .PC(PCF),
         .PC_Next(PC_F)
     );
