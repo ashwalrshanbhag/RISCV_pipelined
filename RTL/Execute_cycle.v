@@ -34,6 +34,9 @@ module execute_cycle(clk, rst, RegWriteE, ALUSrcE, MemWriteE, ResultSrcE, Branch
 
     // Declaration of Modules
     // 3 by 1 Mux for Source A
+    //00 -> load from decode cycle 
+    //01 -> write back cycle 
+    //10 - > ALu result 
     Mux_3_by_1 srca_mux (
                         .a(RD1_E),
                         .b(ResultW),
