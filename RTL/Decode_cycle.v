@@ -5,7 +5,7 @@ module decode_cycle(clk, rst, InstrD, PCD, PCPlus4D, RegWriteW, RDW, ResultW,
 
     // Declaring I/O
     input clk, rst, RegWriteW;
-    input FlushE;                  // load-use: flush ID/EX register to NOP
+    input FlushE;                  // load-use: flush ID/EX register to NOP 
     input [4:0] RDW;
     input [31:0] InstrD, PCD, PCPlus4D, ResultW;
 
@@ -79,6 +79,7 @@ module decode_cycle(clk, rst, InstrD, PCD, PCPlus4D, RegWriteW, RDW, ResultW,
     always @(posedge clk or negedge rst) begin
         if(rst == 1'b0 || FlushE == 1'b1) begin
             // Reset OR flush: drive NOP into EX stage
+            //input to the flop 
             RegWriteD_r  <= 1'b0;
             JumpD_r      <= 1'b0;
             ALUSrcD_r    <= 1'b0;
