@@ -1,7 +1,20 @@
-
 # RISC-V 5-Stage Pipelined Processor (RV32I)
 
+![Status](https://img.shields.io/badge/tests-16%2F16%20passing-brightgreen)
+![HDL](https://img.shields.io/badge/HDL-Verilog-blue)
+![ISA](https://img.shields.io/badge/ISA-RV32I-orange)
+![Sim](https://img.shields.io/badge/simulator-Vivado%20XSim-red)
+
 A 32-bit RISC-V processor implementing the RV32I base instruction set on a classic 5-stage pipeline (IF → ID → EX → MEM → WB), written in Verilog and simulated on Xilinx Vivado XSim.
+
+<!-- Add a block diagram of your pipeline here. Export from Vivado's schematic view,
+     draw.io, or a photo of a whiteboard sketch — drop the file in docs/images/ and
+     update the path below. This is one of the highest-impact things you can add;
+     interviewers look at this before reading any text. -->
+<img src="docs/images/pipeline_diagram.png" width="700" alt="5-stage pipeline block diagram">
+
+> [!NOTE]
+> 32 instructions are implemented in RTL; 16 are currently verified by the automated testbench. See [Instructions Supported](#instructions-supported) for the exact breakdown.
 
 ## Features
 
@@ -55,3 +68,32 @@ tools/
 | Upper immediate | `lui, auipc` | 2 |
 | Custom | `bitrev` (opcode `0001011`) | 1 |
 
+Note: the ALU decoder doesn't distinguish R-type (`0110011`) from I-type (`0010011`) opcodes except where ADD/SUB share an encoding, so all I-type immediate arithmetic ops share the same decode path as their R-type counterparts and come "for free" once the R-type ALU logic is correct.
+
+### Testbench coverage
+
+The current self-checking testbench (`pipeline_tb.v`) exercises a 16-instruction subset: all 10 R-type ALU ops, `addi`, `lui`, `auipc`, `beq`, `bne`, and `jalr`.
+
+> [!WARNING]
+> **Not yet covered by the testbench**: `lw`, `sw`, `jal`, `blt`, `bge`, `bltu`, `bgeu`, the I-type shift/arithmetic ops (`slli, srli, srai, slti, sltiu, xori, ori, andi`), and `bitrev`. These are implemented in RTL but unverified by the automated scoreboard — next priority for testbench expansion.
+
+## Running the Simulation
+
+1. Open the project in Vivado, add all files under `RTL/`.
+2. Set `pipeline_tb.v` as the simulation top module.
+3. Run behavioral simulation for `1000ns`.
+4. Check the TCL console for the `SELF CHECK` / `SUMMARY` output — the testbench reports `PASS`/`FAIL` per instruction and a final error count.
+
+To regenerate the test program:
+```bash
+python tools/asm.py test_program.asm -o RTL/program.hex
+python tools/refsim.py test_program.asm    # prints expected register values for the scoreboard
+```
+
+## Verification Approach
+
+The testbench (`pipeline_tb.v`) uses a 26-entry scoreboard that watches every register write-back commit in program order and grades it against the expected value from the reference simulator, rather than only checking final register state. This caught a register-file same-cycle read/write hazard bug that only manifested for instructions exactly 3 apart from their producer in the pipeline — invisible to simpler end-of-simulation-only checks.
+
+## Status
+
+All 16 instructions currently exercised by the self-checking testbench pass with 0 errors. The remaining 16 implemented instructions (loads/stores, `jal`, 4 branch comparisons, I-type shift/logic ops, `bitrev`) are functionally complete in RTL but not yet covered by the automated scoreboard — testbench expansion in progress.
