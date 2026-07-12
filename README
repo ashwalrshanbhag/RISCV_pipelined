@@ -34,10 +34,6 @@ RTL/
 ├── Data_Memory.v          # Data RAM
 └── pipeline_tb.v          # Self-checking testbench (scoreboard-based)
 
-tools/
-├── asm.py                 # Mini-assembler: assembly -> program.hex
-└── refsim.py              # Reference ISA simulator: generates expected register values
-```
 
 ## Instructions Supported
 
